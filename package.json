@@ -1,0 +1,28 @@
+{
+  "name": "todo-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nguyenlekhtn/todo-list.git"
+  },
+  "keywords": [],
+  "author": "Le Nguyen <nguyenlekhtn@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nguyenlekhtn/todo-list/issues"
+  },
+  "homepage": "https://github.com/nguyenlekhtn/todo-list#readme",
+  "devDependencies": {
+    "webpack": "^5.31.0",
+    "webpack-cli": "^4.6.0"
+  },
+  "dependencies": {
+    "date-fns": "^2.20.0",
+    "PubSub": "^4.0.0"
+  }
+}
