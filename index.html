@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Todo List</title>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@900&display=swap" rel="stylesheet">  
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">TODO LIST</div>
+                <nav class="sidebar">
+                    <ul class="nav">
+                        <li class="nav-item nav-item-link nav-selected">
+                            <span class="project-name">Home</span>
+                        </li>
+                        <li class="nav-item nav-item-projects">
+                            <span class="nav-item-projects-title">Projects</span>
+                            <ul class="projects">
+                                <li class="project-item nav-item-link">
+                                    <span class="project-name">Gym</span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="main-site">
+                    <div class="todo-lists">
+                        <div class="todo">
+                            <input type="checkbox" name="todo" class="todo-complete">
+                            <p class="todo-name">Pay</p>
+                            <input type="button" value="DETAILS" class="todo-detail">
+                            <p class="todo-date">Jun 9th</p>
+                            <img src="../src/img/edit-box.svg" class="todo-edit todo-icon">
+                            <img src="../src/img/trash.svg" class="todo-bin todo-icon">
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="main.js"></script>
+    </body>
+</html>
