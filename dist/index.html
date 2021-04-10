@@ -6,40 +6,101 @@
         <title>Todo List</title>
         <link rel="stylesheet" href="style.css" />
         <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@900&display=swap" rel="stylesheet">  
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;700&display=swap" rel="stylesheet">  
     </head>
     <body>
-        <div class="container">
-            <div class="header">TODO LIST</div>
-                <nav class="sidebar">
-                    <ul class="nav">
-                        <li class="nav-item nav-item-link nav-selected">
-                            <span class="project-name">Home</span>
-                        </li>
-                        <li class="nav-item nav-item-projects">
-                            <span class="nav-item-projects-title">Projects</span>
-                            <ul class="projects">
-                                <li class="project-item nav-item-link">
-                                    <span class="project-name">Gym</span>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
-                <div class="main-site">
-                    <div class="todo-lists">
-                        <div class="todo">
-                            <input type="checkbox" name="todo" class="todo-complete">
-                            <p class="todo-name">Pay</p>
-                            <input type="button" value="DETAILS" class="todo-detail">
-                            <p class="todo-date">Jun 9th</p>
-                            <img src="../src/img/edit-box.svg" class="todo-edit todo-icon">
-                            <img src="../src/img/trash.svg" class="todo-bin todo-icon">
+        <div id="container">
+            <div class="project-panel">
+                <h3 class="project-header project-link">Projects</h3>
+                <div class="divider"></div>
+                <div class="project-container">
+                    <div class="project project-link active">Hello</div>
+                    <div class="add-project-container">
+                        <div class="add-project">
+                            <div class="popup-container">
+                                <label class="plus-icon project-link" for="project-popup">+</label>
+                                <input type="checkbox" id="project-popup">
+                                <div class="popup">
+                                    <label for="project-popup" class="transparent-label"></label>
+                                    <div class="popup-inner">
+                                        <div class="popup-title">
+                                            <h6>New Project</h6>
+                                            <label for="project-popup" class="popup-close-btn">Close</label>
+                                        </div>
+                                        <div class="popup-content">
+                                            <form action="" id="new-project-form">
+                                                <ul>
+                                                    <li>
+                                                        <input name="name" type="text" placeholder="Project name" class="edit-input" required autofocus>
+                                                    </li>
+                                                    <li>
+                                                        <input name="description" type="text" placeholder="Project description">
+                                                    </li>
+                                                    <li>
+                                                        <button type="submit">Submit</button>
+                                                    </li>
+                                                </ul>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                </div>   
 
+            </div>
+            <div class="main-panel">
+                <div class="project-info-container">
+                    <div class="project-info">
+                        <div class="project-info-name">Le Project</div>
+                        <div class="project-info-description">My Project</div>
+                    </div>
+                    <div class="project-edit-icon project-link">
+                        Edit
+                    </div>
+                </div>
+                <div class="edit-project-button-container">
+                    <form id="edit-project-info-form">
+                        <input type="text" class="edit-input project-info-name" id="edit-input-name">
+                        <input type="text" class="edit-input project-info-description" id="edit-input-description">
+                        <div class="edit-project-button-container">
+                            <input type="submit" value="Submit" class="edit-task-btn submit project-link">
+                            <input type="button" value="Cancel" class="edit-task-btn cancel project-link">
+                        </div>
+                    </form>
+                </div>
+                <div class="divider"></div>
+                <div class="tasks-container">
+                    <div class="task">
+                        <div class="task-content">
+                            <div class="task-area">
+                                <div class="check checked project-link"></div>
+                                <div class="task-name project-link">Default Task</div>
+                            </div>
+                            
+                            <div class="task-area project-link">
+                                <div class="task-duedate">11 hours ago</div>
+                                <img class="task-icon edit-icon" src="../src/img/edit-box.svg">
+                                <img class="task-icon bin-icon" src="../src/img/trash.svg">
+                            </div>
+                        </div>
+                        <div class="edit-task-content">
+                            <div class="task-area">
+                                <input type="text" value="Default Task" class="edit-input">
+                                <input type="date" class="edit-input">
+                            </div>
 
+                            <div class="task-area">
+                                <input type="button" value="Submit" class="edit-project-btn submit project-link">
+                                <input type="button" value="Cancel" class="edit-project-btn cancel project-link">
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
         <script src="main.js"></script>

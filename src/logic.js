@@ -1,9 +1,4 @@
-// import { IS_FINISHED } from './event-types.js'
-// import {projectsView} from './UI.js'
-
 import PubSub from 'PubSub';
-
-const pubsub = new PubSub()
 
 const Task = (title, description="", dueDate, priority, notes="") => {
     let isCompleted = false;
@@ -43,18 +38,3 @@ const ProjectList = () => {
     }
 
 }
-
-function projectsView() {
-    const myProjects = ProjectList
-    document.getElementById("new-project-form").addEventListener("submit", e => {
-        const name = e.target.elements["name"].value;
-        const description = e.target.elements["description"].value
-    })
-
-    
-}
-projectsView()
-
-
-
-
