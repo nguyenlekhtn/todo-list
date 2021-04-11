@@ -1,8 +1,8 @@
 import PubSub from 'PubSub';
+const pubsub = new PubSub()
 
-const Task = (title, description="", dueDate, priority, notes="") => {
+const Task = (id, title, description="", dueDate, priority, notes="") => {    
     let isCompleted = false;
-    const pubsub = new PubSub();
     const priorityChange = function(newPriority) {
         priority = newPriority
     }
@@ -10,7 +10,7 @@ const Task = (title, description="", dueDate, priority, notes="") => {
     return {title, description, dueDate, priority, priorityChange}
 }
 
-const Project = (name, description="") => {
+const Project = (id, name, description="") => {
     let tasks = []
     
     const addItem = function(item) {
@@ -22,19 +22,22 @@ const Project = (name, description="") => {
         items.splice(pos, 1)
     }
 
-    return {name, description, addItem}
+    return {id, name, description, addItem}
 }
 
 const ProjectList = () => {
     let projects = []
-    const defaultProject = project("default")
+    
 
     const addProject = function(project) {
         projects.push(project)
+        pubsub.publish('projectAdded', project)
     }
 
     const removeProject = function(project) {
         const pos = project.indexOf()
     }
-
+    return {addProject, removeProject}
 }
+
+export {Task, Project, ProjectList, pubsub}
