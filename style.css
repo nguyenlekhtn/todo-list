@@ -124,6 +124,10 @@ input, body, html {
     justify-content: space-around;
 }
 
+.project-icon-container:hover {
+    box-shadow: 2px 2px 5px #373c3f;
+}
+
 .project-info-icon {
     width: 25px;
 }
@@ -155,6 +159,18 @@ input, body, html {
     margin-bottom: 5px;
 }
 
+.edit-task-input {
+    color: inherit;
+    background-color: #444a4d;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.edit-task-input:last-child {
+    margin-left: 5px;
+}
+
 .edit-project-btn{
     
     border-radius: 5px;
@@ -162,6 +178,7 @@ input, body, html {
     margin-top: 4px;
     padding: 12px;
     margin-bottom: 0px;
+    font-weight: 700;
 }
 
 .submit {
@@ -212,6 +229,8 @@ input, body, html {
 .task-icon {
     width: 16px;
     margin-left: 12px;
+    cursor: pointer;
+    
 }
 
 .edit-info-btn{
