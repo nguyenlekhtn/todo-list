@@ -6,6 +6,7 @@
 	text-decoration: none;
 }
 
+
 #container, body, html {
     width: 100vw;
     height: 100vh;
@@ -116,20 +117,28 @@ input, body, html {
     padding-left: 5px;
 }
 
-.project-edit-icon {
+.project-icon-container {
     padding: 10px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
-.project-edit-icon:hover {
-    background-color: #444a4d;
+.project-info-icon {
+    width: 25px;
 }
+
+/* .project-edit-icon:hover {
+    background-color: #444a4d;
+} */
 
 .project-link {
     cursor: pointer;
 }
 
-.edit-project-button-container {
+.edit-project-info-container {
     display: none;
+    flex-direction: column;
 }
 
 #edit-project-info-form {
@@ -205,14 +214,14 @@ input, body, html {
     margin-left: 12px;
 }
 
-.edit-task-btn{
+.edit-info-btn{
     border-radius: 5px;
     border: none;
     margin: 0px 5px;
     padding: 12px;
     font-weight: 700;
-    
 }
+
 
 .edit-task-content {
     display: none;
@@ -294,6 +303,7 @@ input, body, html {
 }
 
 .popup-content ul li input {
+    /* display: inline-block; */
     color: inherit;
     width: 100%;
     background-color: #444a4d;
@@ -305,16 +315,18 @@ input, body, html {
     box-sizing: border-box;
 }
 
-.popup-content ul li button {
-    width: 100%;
+.popup-submit-btn {
+    display: block;
+    /* width: 100%; */
     line-height: 32px;
     background: green;
-    color: #fff;
     cursor: pointer;
     border-radius: 5px;
     border: none;
     font-size: 16px;
     font-weight: 700;
+    padding: 0 15px;
+    text-align: center;
 }
 
 .transparent-label {

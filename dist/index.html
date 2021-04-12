@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -30,13 +29,14 @@
                                         <form action="" id="new-project-form">
                                             <ul>
                                                 <li>
-                                                    <input name="name" type="text" placeholder="Project name" class="edit-input" required autofocus>
+                                                    <input name="new-project-name" id="new-project-name" type="text" placeholder="Project name" required autofocus>
                                                 </li>
                                                 <li>
-                                                    <input name="description" type="text" placeholder="Project description">
+                                                    <input name="new-project-description" id="new-project-description" type="text"  placeholder="Project description">
                                                 </li>
                                                 <li>
-                                                    <button type="submit">Submit</button>
+                                                    <!-- <button type="submit">Submit</button> -->
+                                                    <label for="project-popup" class="popup-submit-btn">Add</label>
                                                 </li>
                                             </ul>
                                         </form>
@@ -54,17 +54,17 @@
                         <div class="project-info-name">Le Project</div>
                         <div class="project-info-description">My Project</div>
                     </div>
-                    <div class="project-edit-icon project-link">
-                        Edit
+                    <div class="project-icon-container project-link">
+                        <img src="../src/img/edit.svg" class="project-info-icon project-edit-icon">
                     </div>
                 </div>
-                <div class="edit-project-button-container">
+                <div class="edit-project-info-container">
                     <form id="edit-project-info-form">
                         <input type="text" class="edit-input project-info-name" id="edit-input-name">
                         <input type="text" class="edit-input project-info-description" id="edit-input-description">
                         <div class="edit-project-button-container">
-                            <input type="submit" value="Submit" class="edit-task-btn submit project-link">
-                            <input type="button" value="Cancel" class="edit-task-btn cancel project-link">
+                            <input type="submit" value="Submit" class="edit-info-btn submit project-link">
+                            <input type="button" value="Cancel" class="edit-info-btn cancel project-link">
                         </div>
                     </form>
                 </div>
@@ -79,7 +79,7 @@
                             
                             <div class="task-area project-link">
                                 <div class="task-duedate">11 hours ago</div>
-                                <img class="task-icon edit-icon" src="../src/img/edit-box.svg">
+                                <img class="task-icon edit-icon" src="../src/img/edit.svg">
                                 <img class="task-icon bin-icon" src="../src/img/trash.svg">
                             </div>
                         </div>

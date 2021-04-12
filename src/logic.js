@@ -1,10 +1,16 @@
 import PubSub from 'PubSub';
 const pubsub = new PubSub()
+import {formatDistanceToNow} from 'date-fns'
+
 
 const Task = (id, title, description="", dueDate, priority, notes="") => {    
     let isCompleted = false;
     const priorityChange = function(newPriority) {
         priority = newPriority
+    }
+
+    const getDistanceFromNow = () => {
+        return formatDistanceToNow(dueDate, {addSuffix: true})
     }
     
     return {title, description, dueDate, priority, priorityChange}
@@ -37,7 +43,12 @@ const ProjectList = () => {
     const removeProject = function(project) {
         const pos = project.indexOf()
     }
-    return {addProject, removeProject}
+
+    const findProject = (projectID) => { 
+        return projects.filter(project => project.id == projectID)[0]
+    }
+
+    return {addProject, removeProject, findProject}
 }
 
 export {Task, Project, ProjectList, pubsub}
