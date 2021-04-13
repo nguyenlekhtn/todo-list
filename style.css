@@ -41,7 +41,7 @@ input, body, html {
 }
 
 .project-container .project {
-    font-size: 1.5em;
+    font-size: 1em;
     padding: 10px;
     border-radius: 2px;
     display: flex;
@@ -75,7 +75,7 @@ input, body, html {
     align-items: center;
 }
 
-.add-project .plus-icon {
+.plus-icon {
     font-size: 1.5em;
     font-weight: 700;
     color: #ff3f3f;
@@ -179,6 +179,15 @@ input, body, html {
     padding: 12px;
     margin-bottom: 0px;
     font-weight: 700;
+}
+
+.edit-task-btn{
+    
+    border-radius: 5px;
+    border: none;
+    padding: 12px;
+    font-weight: 700;
+    margin-left: 5px;
 }
 
 .submit {
@@ -356,4 +365,16 @@ input, body, html {
     height: 100vh;
     z-index: -1;
     cursor: pointer;
-  }
+}
+
+.add-task-container {
+    margin-top: 5px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.new-task-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
