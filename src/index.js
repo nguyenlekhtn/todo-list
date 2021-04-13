@@ -1,7 +1,5 @@
 // import { IS_FINISHED } from './event-types.js'
-import {projectsView, projectController} from './render'
-
-
+import {Task, Project, ProjectList, projectsView, projectController} from './render'
 
 
 

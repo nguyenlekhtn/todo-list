@@ -1,6 +1,6 @@
 import PubSub from 'PubSub';
 const pubsub = new PubSub()
-import {formatDistanceToNow} from 'date-fns'
+import {} from 'date-fns'
 
 
 const Task = (id, name, dueDate) => {    
@@ -9,11 +9,9 @@ const Task = (id, name, dueDate) => {
     //     priority = newPriority
     // }
 
-    const getDistanceFromNow = () => {
-        return formatDistanceToNow(dueDate, {addSuffix: true})
-    }
     
-    return {name, dueDate, getDistanceFromNow}
+    
+    return {name, dueDate}
 }
 
 const Project = (id, name, description="") => {
