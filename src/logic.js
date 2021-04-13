@@ -20,11 +20,14 @@ const Project = (id, name, description="") => {
     const addTask = function(task) {
         taskList.push(task)
         pubsub.publish("taskAdded", task)
+        pubsub.publish('infoChanged', {})
+        localStorage.set('currentTaskID', task.id)
     }   
 
     const removeitem = function(item) {
         const pos = items.indexOf(items)
         items.splice(pos, 1)
+        pubsub.publish('infoChanged', {})
     }
 
     return {id, name, description, addTask}
@@ -37,10 +40,13 @@ const ProjectList = () => {
     const addProject = function(project) {
         projects.push(project)
         pubsub.publish('projectAdded', project)
+        pubsub.publish('infoChanged', {})
+        localStorage('currentProjectID', project.id)
     }
 
     const removeProject = function(project) {
         const pos = project.indexOf()
+        pubsub.publish('infoChanged', {})
     }
 
     const findProject = (projectID) => { 

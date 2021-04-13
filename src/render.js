@@ -318,13 +318,31 @@ const TaskListView = (() => {
 
 
 const Controller = (() => {
-    const myProjects = ProjectList()
-    let newProjectID = 1
-    let newTaskID = 1
-    const defaultProject = Project(0, "Default Project", "")
-    let currentProject = defaultProject
+    if(!localStorage.getItem('projectList'))
+    {
+        populateStorage()
+    }
+    else {
+        const myProjectList = localStorage.getItem('projectList')
+    }
 
-    myProjects.addProject(defaultProject)
+    function populateStorage() {
+        const myProjectList = ProjectList()
+        localStorage.setItem('projectList', JSON.stringify(myProjectList))
+        let newProjectID = 1
+        let newTaskID = 1
+        const defaultProject = Project(0, "Default Project", "")
+        myProjects.addProject(defaultProject)
+        let currentProject = defaultProject
+        const defaultTaskName = "Default Task"
+        const defaultDate = formatISO(addDays(new Date(), 1), {representation: 'date'})
+        console.log({defaultDate})
+        const defaultTask = Task(0, defaultTaskName, defaultDate)
+        defaultProject.addTask(defaultTask)
+    }
+    
+
+    
 
     pubsub.subscribe("newInfoSubmitted", (data, info) => {
         const newProject = Project(newProjectID++, data.name, data.description)
@@ -342,22 +360,24 @@ const Controller = (() => {
     pubsub.subscribe('projectInfoSubmitted', ({title, description},info) => {
         currentProject.name = title
         currentProject.description = description
+        pubsub.publish('infoChanged', {})
         pubsub.publish('projectInfoChanged', {id: currentProject.id, title})
     })
-    const defaultTaskName = "Default Task"
-    const defaultDate = formatISO(addDays(new Date(), 1), {representation: 'date'})
-    console.log({defaultDate})
-    const defaultTask = Task(0, defaultTaskName, defaultDate)
-    defaultProject.addTask(defaultTask)
+    
 
     pubsub.subscribe('taskInfoSubmitted', ({task, title, dueDate}, info) => {
         task.name = title
         task.dueDate = dueDate
+        pubsub.publish('infoChanged', {})
     })
 
     pubsub.subscribe('newTaskSubmitted', ({title, dueDate}, topic) => {
         const newTask = Task(newTaskID++, title, dueDate)
         currentProject.addTask(newTask)
+    })
+
+    pubsub.subscribe('infoChanged', (data, topic) => {
+        localStorage('projectList',  JSON.stringify(myProjectList))
     })
 
     
