@@ -1,27 +1,17 @@
-import {Task, Project, ProjectList, pubsub} from './logic'
+import {Task, Project, ProjectList, pubsub, ls} from './logic'
 import {addDays, formatISO, parseISO, formatDistanceStrict} from 'date-fns'
 
 import editSVG from './img/edit.svg'
 import binSVG from './img/trash.svg'
 
-const createProjectDOM = (project) => {
-    const newProjectDOM = document.createElement('div')
-    newProjectDOM.classList.add("project", "project-link")
-    newProjectDOM.setAttribute("data-projectID", project.getProjectInfo().id)
-    newProjectDOM.textContent = project.getProjectInfo().name
 
-    if(!projectContainerDOM.hasChildNodes()) {
-        newProjectDOM.classList.add('active')
-    }
-
-    return {newProjectDOM}
-}
+const defaultTaskName = "Default Task"
+const defaultDate = formatISO(addDays(new Date(), 1), {representation: 'date'})
 
 const projectListView = (() => {
     const projectContainerDOM = document.querySelector('.project-container')
 
     pubsub.subscribe("projectAdded", (project, topic) => {
-        console.log(createProjectDOM(project))
         const newProjectDOM = createProjectDOM(project)
         projectContainerDOM.appendChild(newProjectDOM)
     })
@@ -38,7 +28,8 @@ const projectListView = (() => {
 
         return newProjectDOM
     }
-     
+    
+    
 
     pubsub.subscribe('projectInfoChanged', (project, topic) => {
         const id = project.getProjectInfo().id
@@ -59,11 +50,18 @@ const projectListView = (() => {
         {
             removeActiveDOM()
             e.target.classList.add('active')
-            console.log(e.target.dataset.projectid)
             pubsub.publish('projectSelected', e.target.dataset.projectid)
         }
         
     })
+
+    function selectFirstOne() {
+        const firstProjectDOM = projectContainerDOM.firstElementChild
+        firstProjectDOM.classList.add('active')
+        pubsub.publish('projectSelected', firstProjectDOM.dataset.projectid)
+    }
+
+
 
     function removeActiveDOM() {
         [...projectContainerDOM.children].forEach(node => {
@@ -72,7 +70,7 @@ const projectListView = (() => {
     }
     
 
-    return {}
+    return {selectFirstOne}
 
 })()
 
@@ -145,7 +143,6 @@ const TaskDOM = (task) => {
     
     const remainTime = document.createElement('div')
     remainTime.classList.add('task-duedate')
-    console.log(task.dueDate)
     remainTime.textContent = getDistanceFromNow(task.getTaskInfo().dueDate)
     
     
@@ -157,13 +154,11 @@ const TaskDOM = (task) => {
     leftEdit.classList.add('task-area')
     
     const editTaskName = document.createElement('input')
-    editTaskName.id = 'edit-task-name'
     editTaskName.type = 'text'
     editTaskName.value = task.getTaskInfo().name
     editTaskName.classList.add("edit-task-input")
     
     const editTaskDueDate = document.createElement('input')
-    editTaskDueDate.id = 'edit-task-duedate'
     editTaskDueDate.type = 'date'
     editTaskDueDate.value = task.getTaskInfo().dueDate
     editTaskDueDate.classList.add("edit-task-input")
@@ -190,11 +185,9 @@ const TaskDOM = (task) => {
     cancelButton.type = 'button'
     cancelButton.value = 'Cancel'
     cancelButton.classList.add("edit-task-btn", "cancel", "project-link")
-    console.log({cancelButton})
     cancelButton.addEventListener('click', e => {
         _changeTaskDisplay()    
     })
-    console.log({onlick: cancelButton.onlick})
     rightEdit.appendChild(submitButton)
     rightEdit.appendChild(cancelButton)
     editTaskDOM.appendChild(leftEdit)
@@ -256,13 +249,13 @@ const TaskListView = (() => {
         const editTaskName = document.createElement('input')
         editTaskName.id = 'edit-task-name'
         editTaskName.type = 'text'
-        editTaskName.value = Controller.defaultTaskName
+        editTaskName.value = defaultTaskName
         editTaskName.classList.add("edit-task-input")
         
         const editTaskDueDate = document.createElement('input')
         editTaskDueDate.id = 'edit-task-duedate'
         editTaskDueDate.type = 'date'
-        editTaskDueDate.value = Controller.defaultDate
+        editTaskDueDate.value = defaultDate
         editTaskDueDate.classList.add("edit-task-input")
         leftEdit.appendChild(editTaskName)
         leftEdit.appendChild(editTaskDueDate)
@@ -287,7 +280,6 @@ const TaskListView = (() => {
         cancelButton.type = 'button'
         cancelButton.value = 'Cancel'
         cancelButton.classList.add("edit-task-btn", "cancel", "project-link")
-        console.log({cancelButton})
         cancelButton.addEventListener('click', e => {
             editTaskContainerDOM.remove()
             addTaskContainerDOM.style.display = 'flex'
@@ -302,6 +294,7 @@ const TaskListView = (() => {
     }
 
     pubsub.subscribe('loadTaskList', (taskList, info) => {
+        taskListDOM.textContent = ""
         taskList.forEach(createTaskDOM)
     })
 
@@ -329,30 +322,58 @@ const TaskListView = (() => {
 })()
 
 const Controller = (() => {
-    // if(!localStorage.getItem('projectList'))
-    // {
-    //     populateStorage()
-    // }
-    // else {
-    //     const myProjectList = localStorage.getItem('projectList')
-    // }
+    let currentProject;
+    let newProjectID
+    let newTaskID
 
-    // function populateStorage() {
-        localStorage.setItem('projectList', JSON.stringify(ProjectList))
-        let newProjectID = 1
-        let newTaskID = 1
-        localStorage.setItem('currentProjectID', newProjectID)
-        localStorage.setItem('currentTaskID', newTaskID)
+    // if(!localStorage.getItem('projectList'))
+    if(!ls.get('projectList'))
+    {
+        populateStorage()
+    }
+    else{
+        setItems()
+    }
+
+    function populateStorage() {
+        // localStorage.setItem('projectList', JSON.stringify(ProjectList.getList()))
+        
+        newProjectID = 1
+        newTaskID = 1
+        // localStorage.setItem('currentProjectID', newProjectID)
+        // localStorage.setItem('currentTaskID', newTaskID)
+        ls('currentProjectID', newProjectID)
+        ls('currentTaskID', newTaskID)
         
         const defaultProjectName = "Default Project"
         const defaultProject = Project(0, defaultProjectName, "")
         ProjectList.addProject(defaultProject)
-        let currentProject = defaultProject
-        const defaultTaskName = "Default Task"
-        const defaultDate = formatISO(addDays(new Date(), 1), {representation: 'date'})
+        currentProject = defaultProject
+        
         const defaultTask = Task(0, defaultTaskName, defaultDate)
         defaultProject.addTask(defaultTask)
-    // }
+        // ls('projectList', ProjectList.getList())
+    }
+
+    function setItems() {
+        // const currentProjectList = JSON.parse(localStorage.getItem('projectList'))
+        // const currentTaskID = JSON.parse(localStorage.getItem('currentTaskID'))
+        // const currentProjectID = JSON.parse(localStorage.getItem('currentProjectID'))
+        const currentProjectList = ls('projectList')
+        const currentTaskID = ls('currentTaskID')
+        const currentProjectID = ls('currentProjectID')
+        currentProjectList.forEach(project => {
+            ProjectList.addProject(project)
+        })
+        newProjectID = currentTaskID
+        newTaskID = currentProjectID
+
+
+        if(ProjectList.getList().length != 0) {
+            projectListView.selectFirstOne()
+            currentProject = ProjectList.getList()[0]
+        }
+    }
     
 
     
@@ -364,7 +385,6 @@ const Controller = (() => {
     
     pubsub.subscribe('projectSelected', (data, info) => {
         const projectSelected = ProjectList.findProject(data)
-        console.log({projectSelected})
         currentProject = projectSelected
         pubsub.publish('changeProject', projectSelected)
         pubsub.publish('loadTaskList', projectSelected.getProjectInfo().list)
@@ -380,8 +400,7 @@ const Controller = (() => {
     
 
     pubsub.subscribe('taskInfoSubmitted', ({task, title, dueDate}, info) => {
-        task.name = title
-        task.dueDate = dueDate
+        task.setTaskInfo(title, dueDate)
         pubsub.publish('infoChanged', {})
     })
 
@@ -391,11 +410,15 @@ const Controller = (() => {
     })
 
     pubsub.subscribe('infoChanged', (data, topic) => {
-        localStorage.setItem('projectList',  JSON.stringify(ProjectList))
+        localStorage.setItem('projectList2',  JSON.stringify(ProjectList.list))
+        console.log('actual list: ', ProjectList.list)
+        ls('projectList', ProjectList.getList()[0])
+        console.log('stored list', JSON.parse(localStorage.getItem('projectList2')))
+        // console.log('lslist', ls('projectList'))
     })
 
     
-    return {defaultTaskName, defaultDate}
+    return {}
 })()
 
 export {projectListView, Controller, TaskListView}

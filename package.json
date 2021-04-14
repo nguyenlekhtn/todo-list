@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "date-fns": "^2.20.0",
+    "local-storage": "^2.0.0",
     "PubSub": "^4.0.0"
   }
 }

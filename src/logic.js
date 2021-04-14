@@ -1,6 +1,6 @@
 import PubSub from 'PubSub';
 const pubsub = new PubSub()
-import {} from 'date-fns'
+const ls = require('local-storage');
 
 
 const Task = (id, name, dueDate) => {    
@@ -9,7 +9,7 @@ const Task = (id, name, dueDate) => {
     const setTaskInfo = (newName, newDueDate) => {
         name = newName
         dueDate = newDueDate
-        pubsub('taskInfoChange', {name, dueDate})
+        pubsub.publish('taskInfoChange', {name, dueDate})
     }
 
     const getTaskInfo = () => ({id, name, dueDate})
@@ -26,7 +26,7 @@ const Project = (id, name, description="") => {
         list.push(task)
         pubsub.publish("taskAdded", task)
         pubsub.publish('infoChanged', {})
-        localStorage.setItem('currentTaskID', task.id)
+        ls('currentTaskID', task.id + 1)
     }   
 
     const removeTask = function(item) {
@@ -53,7 +53,7 @@ const ProjectList = (() => {
         list.push(project)
         pubsub.publish('projectAdded', project)
         pubsub.publish('infoChanged', {})
-        localStorage.setItem('currentProjectID', project.id)
+        ls('currentProjectID', project.id + 1)
 
     }
 
@@ -66,7 +66,11 @@ const ProjectList = (() => {
         return list.filter(project => project.getProjectInfo().id == projectID)[0]
     }
 
-    return {addProject, removeProject, findProject, list}
+    const getList = () => {
+        return [...list]
+    }
+
+    return {addProject, removeProject, findProject, getList, list}
 })()
 
-export {Task, Project, ProjectList, pubsub}
+export {Task, Project, ProjectList, pubsub, ls}
