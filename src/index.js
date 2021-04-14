@@ -1,5 +1,6 @@
 // import { IS_FINISHED } from './event-types.js'
-import {Task, Project, ProjectList, projectsView, projectController} from './render'
+import {projectListView, Controller, TaskListView} from './render'
+import {Task, Project, ProjectList} from './logic'
 
 
 
