@@ -21,9 +21,18 @@ const projectListView = (() => {
         newProjectDOM.classList.add("project", "project-link")
         newProjectDOM.setAttribute("data-projectID", project.getProjectInfo().id)
         newProjectDOM.textContent = project.getProjectInfo().name
-
+        newProjectDOM.addEventListener('click', e => {
+            if(!e.target.classList.contains('active'))
+            {
+                removeActiveDOM()
+                e.target.classList.add('active')
+                console.log({target: e.target, id: e.target.dataset.projectid})
+                pubsub.publish('projectSelected', e.target.dataset.projectid)
+            }
+            
+        })
         if(!projectContainerDOM.hasChildNodes()) {
-            newProjectDOM.classList.add('active')
+            // newProjectDOM.classList.add('active')
         }
 
         return newProjectDOM
@@ -44,22 +53,16 @@ const projectListView = (() => {
         pubsub.publish("newInfoSubmitted", {name, description})
         // return false;
     })
-    
-    projectContainerDOM.addEventListener('click', e => {
-        if(!e.target.classList.contains('active'))
-        {
-            removeActiveDOM()
-            e.target.classList.add('active')
-            pubsub.publish('projectSelected', e.target.dataset.projectid)
-        }
-        
-    })
 
-    function selectFirstOne() {
+
+    
+    
+
+    pubsub.subscribe('selectFirstOne', () => {
         const firstProjectDOM = projectContainerDOM.firstElementChild
         firstProjectDOM.classList.add('active')
-        pubsub.publish('projectSelected', firstProjectDOM.dataset.projectid)
-    }
+        pubsub.publish('projectSelected', firstProjectDOM.dataset.id)
+    })
 
 
 
@@ -70,7 +73,7 @@ const projectListView = (() => {
     }
     
 
-    return {selectFirstOne}
+    return {}
 
 })()
 
@@ -326,7 +329,6 @@ const Controller = (() => {
     let newProjectID
     let newTaskID
 
-    // if(!localStorage.getItem('projectList'))
     if(!ls.get('projectList'))
     {
         populateStorage()
@@ -336,46 +338,57 @@ const Controller = (() => {
     }
 
     function populateStorage() {
-        // localStorage.setItem('projectList', JSON.stringify(ProjectList.getList()))
-        
-        newProjectID = 1
-        newTaskID = 1
         // localStorage.setItem('currentProjectID', newProjectID)
         // localStorage.setItem('currentTaskID', newTaskID)
-        ls('currentProjectID', newProjectID)
-        ls('currentTaskID', newTaskID)
+        // ls('currentProjectID', newProjectID)
+        // ls('currentTaskID', newTaskID)
         
         const defaultProjectName = "Default Project"
-        const defaultProject = Project(0, defaultProjectName, "")
+        const defaultProjectID = 0
+        const defaultProject = Project(defaultProjectID, defaultProjectName, "")
         ProjectList.addProject(defaultProject)
         currentProject = defaultProject
-        
+        const defaultTaskID = 0
         const defaultTask = Task(0, defaultTaskName, defaultDate)
+
         defaultProject.addTask(defaultTask)
-        // ls('projectList', ProjectList.getList())
+
+
+        newProjectID = defaultProjectID + 1;
+        newTaskID = defaultTaskID + 1
     }
 
     function setItems() {
         // const currentProjectList = JSON.parse(localStorage.getItem('projectList'))
         // const currentTaskID = JSON.parse(localStorage.getItem('currentTaskID'))
         // const currentProjectID = JSON.parse(localStorage.getItem('currentProjectID'))
-        const currentProjectList = ls('projectList')
-        const currentTaskID = ls('currentTaskID')
-        const currentProjectID = ls('currentProjectID')
-        currentProjectList.forEach(project => {
+        
+        // const currentProjectList = ls('projectList')
+        const plainProjectArr = ls('projectList')
+        const richProjectArr = parseProjectList(plainProjectArr)
+        
+        // let currentProjectID, currentTaskID
+        const lastProjectID = ls('currentProjectID')
+        const lastTaskID = ls('currentTaskID')
+
+        // console.log({currentProjectList})
+        richProjectArr.forEach(project => {
             ProjectList.addProject(project)
         })
-        newProjectID = currentTaskID
-        newTaskID = currentProjectID
+        
 
-
+        console.log(ProjectList.getList().length)
         if(ProjectList.getList().length != 0) {
-            projectListView.selectFirstOne()
+            pubsub.publishSync('selectFirstOne')
             currentProject = ProjectList.getList()[0]
+            loadProject(currentProject.getProjectInfo().id)
         }
+
+        newProjectID = lastProjectID + 1
+        newTaskID = lastTaskID + 1
     }
     
-
+    // function getNewProjectID
     
 
     pubsub.subscribe("newInfoSubmitted", (data, info) => {
@@ -383,13 +396,19 @@ const Controller = (() => {
         ProjectList.addProject(newProject)
     })
     
-    pubsub.subscribe('projectSelected', (data, info) => {
-        const projectSelected = ProjectList.findProject(data)
+    pubsub.subscribe('projectSelected', (id, info) => {
+        loadProject(id)
+    })
+
+    function loadProject(id) {
+        const projectSelected = ProjectList.findProject(id)
         currentProject = projectSelected
+        if(!projectSelected) {
+            console.log({projectSelected})
+        }
         pubsub.publish('changeProject', projectSelected)
         pubsub.publish('loadTaskList', projectSelected.getProjectInfo().list)
-
-    })
+    }
 
     pubsub.subscribe('projectInfoSubmitted', ({title, description},info) => {
         currentProject.name = title
@@ -410,13 +429,27 @@ const Controller = (() => {
     })
 
     pubsub.subscribe('infoChanged', (data, topic) => {
-        localStorage.setItem('projectList2',  JSON.stringify(ProjectList.list))
-        console.log('actual list: ', ProjectList.list)
-        ls('projectList', ProjectList.getList()[0])
-        console.log('stored list', JSON.parse(localStorage.getItem('projectList2')))
-        // console.log('lslist', ls('projectList'))
+        ls('projectList', ProjectList.getList())
+        
+        // console.log('stored', JSON.parse(localStorage.getItem('project')))
     })
 
+    function parseProjectList(projectArr) {
+        for(let i = 0; i < projectArr.length; i++) {
+            const plainProject = projectArr[i]
+            const richProject = Project(plainProject.id, plainProject.name, plainProject.description)
+            const taskArr = plainProject.list
+            for(let i = 0; i< taskArr.length; i++) {
+                const plainTask = taskArr[i]
+                const richTask = Task(plainTask.id, plainTask.name, plainTask.dueDate)
+                taskArr[i] = richTask
+            }
+            richProject.setList(taskArr)
+            projectArr[i] = richProject
+        }
+
+        return projectArr
+    }
     
     return {}
 })()

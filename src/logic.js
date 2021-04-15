@@ -14,19 +14,27 @@ const Task = (id, name, dueDate) => {
 
     const getTaskInfo = () => ({id, name, dueDate})
 
+    function toJSON() {
+        return {id, name, dueDate}
+    }
     
-    
-    return {setTaskInfo, getTaskInfo}
+    return {setTaskInfo, getTaskInfo, toJSON}
 }
 
 const Project = (id, name, description="") => {
     let list = []
+
+    const setList = (taskArr) => {
+        taskArr.forEach(task => {
+            list.push(task)
+        })
+    }
     
     const addTask = function(task) {
         list.push(task)
         pubsub.publish("taskAdded", task)
         pubsub.publish('infoChanged', {})
-        ls('currentTaskID', task.id + 1)
+        ls('currentTaskID', task.id)
     }   
 
     const removeTask = function(item) {
@@ -42,18 +50,29 @@ const Project = (id, name, description="") => {
 
     const getProjectInfo = () => ({id, name, description, list})
 
-    return {addTask, getProjectInfo, setProjectInfo} 
+    function toJSON() {
+        return {id, name, description, list}
+    }
+
+    return {addTask, getProjectInfo, setProjectInfo, toJSON, setList} 
 }
 
 const ProjectList = (() => {
     let list = []
+
+    const setList = (projectArr) => {
+        projectArr.forEach(project => {
+            list.push(project)
+        })
+    }
     
 
     const addProject = function(project) {
         list.push(project)
-        pubsub.publish('projectAdded', project)
-        pubsub.publish('infoChanged', {})
-        ls('currentProjectID', project.id + 1)
+        pubsub.publishSync('projectAdded', project)
+        pubsub.publish('infoChanged')
+        ls('currentProjectID', project.getProjectInfo().id)
+        // console.log(ls('currentProjectID'))
 
     }
 
@@ -63,14 +82,19 @@ const ProjectList = (() => {
     }
 
     const findProject = (projectID) => { 
-        return list.filter(project => project.getProjectInfo().id == projectID)[0]
+        const project =  list.filter(project => project.getProjectInfo().id == projectID)[0]
+        if(!project) {
+            console.log({list: list.map(project => project.getProjectInfo().id), projectID})
+        }
+
+        return project
     }
 
     const getList = () => {
         return [...list]
     }
 
-    return {addProject, removeProject, findProject, getList, list}
+    return {addProject, removeProject, findProject, getList, setList}
 })()
 
 export {Task, Project, ProjectList, pubsub, ls}
