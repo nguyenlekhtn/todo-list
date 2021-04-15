@@ -33,7 +33,7 @@ const Project = (id, name, description="") => {
     const addTask = function(task) {
         list.push(task)
         pubsub.publish("taskAdded", task)
-        pubsub.publish('infoChanged', {})
+        pubsub.publish('infoChanged')
         ls('currentTaskID', task.id)
     }   
 
@@ -45,7 +45,8 @@ const Project = (id, name, description="") => {
     const setProjectInfo = (newName, newDescription) => {
         name = newName
         description = newDescription
-        pubsub('projectInfoChanged', {name, description})
+        pubsub.publish('projectInfoChanged', {id, name, description})
+        pubsub.publish('infoChanged')
     }
 
     const getProjectInfo = () => ({id, name, description, list})
@@ -72,13 +73,13 @@ const ProjectList = (() => {
         pubsub.publishSync('projectAdded', project)
         pubsub.publish('infoChanged')
         ls('currentProjectID', project.getProjectInfo().id)
-        // console.log(ls('currentProjectID'))
 
     }
 
     const removeProject = function(project) {
-        const pos = list.indexOf()
-        pubsub.publish('infoChanged', {})
+        const pos = list.indexOf(project)
+        list.splice(pos, 1)
+        pubsub.publish('infoChanged')
     }
 
     const findProject = (projectID) => { 

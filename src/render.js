@@ -26,24 +26,33 @@ const projectListView = (() => {
             {
                 removeActiveDOM()
                 e.target.classList.add('active')
-                console.log({target: e.target, id: e.target.dataset.projectid})
                 pubsub.publish('projectSelected', e.target.dataset.projectid)
             }
             
         })
-        if(!projectContainerDOM.hasChildNodes()) {
-            // newProjectDOM.classList.add('active')
-        }
 
         return newProjectDOM
     }
     
+    pubsub.subscribe('removeProjectDOM', (project, info) => {
+        const id = project.getProjectInfo().id
+        ProjectList.removeProject(project)
+        removeProjectDOM(id)
+    })
+
+    function removeProjectDOM(id) {
+        const projectsDOM = [...projectContainerDOM.querySelectorAll('div')]
+        const targetDOM = projectsDOM.filter(projectDOM => {
+            return projectDOM.dataset.projectid == id
+        })[0]
+        
+        projectContainerDOM.removeChild(targetDOM)
+    }
     
 
-    pubsub.subscribe('projectInfoChanged', (project, topic) => {
-        const id = project.getProjectInfo().id
+    pubsub.subscribe('projectInfoChanged', ({id, name, description}, topic) => {
         const changedProjectDOM = document.querySelector(`div[data-projectid='${id}']`)
-        changedProjectDOM.textContent = project.getProjectInfo().name
+        changedProjectDOM.textContent = name
     })
 
     document.querySelector('.popup-submit-btn').addEventListener("click", e => {
@@ -60,8 +69,10 @@ const projectListView = (() => {
 
     pubsub.subscribe('selectFirstOne', () => {
         const firstProjectDOM = projectContainerDOM.firstElementChild
+        if(firstProjectDOM) {
         firstProjectDOM.classList.add('active')
-        pubsub.publish('projectSelected', firstProjectDOM.dataset.id)
+        pubsub.publish('projectSelected', firstProjectDOM.dataset.projectid)
+        }
     })
 
 
@@ -89,10 +100,15 @@ const projectView = (() => {
     })
 
     // edit project info
-    document.querySelector('.project-icon-container').addEventListener('click', e => {
+    document.querySelector('.project-edit-icon').addEventListener('click', e => {
         document.getElementById('edit-input-name').value = projectNameDOM.textContent
         document.getElementById('edit-input-description').value = projectDescDOM.textContent
         toggleProjectEditDisplay()
+    })
+
+    // delete project
+    document.querySelector('.project-trash-icon').addEventListener('click', e => {
+        pubsub.publish('removeCurrentProject')
     })
 
 
@@ -338,11 +354,6 @@ const Controller = (() => {
     }
 
     function populateStorage() {
-        // localStorage.setItem('currentProjectID', newProjectID)
-        // localStorage.setItem('currentTaskID', newTaskID)
-        // ls('currentProjectID', newProjectID)
-        // ls('currentTaskID', newTaskID)
-        
         const defaultProjectName = "Default Project"
         const defaultProjectID = 0
         const defaultProject = Project(defaultProjectID, defaultProjectName, "")
@@ -359,37 +370,32 @@ const Controller = (() => {
     }
 
     function setItems() {
-        // const currentProjectList = JSON.parse(localStorage.getItem('projectList'))
-        // const currentTaskID = JSON.parse(localStorage.getItem('currentTaskID'))
-        // const currentProjectID = JSON.parse(localStorage.getItem('currentProjectID'))
-        
-        // const currentProjectList = ls('projectList')
         const plainProjectArr = ls('projectList')
         const richProjectArr = parseProjectList(plainProjectArr)
         
-        // let currentProjectID, currentTaskID
         const lastProjectID = ls('currentProjectID')
         const lastTaskID = ls('currentTaskID')
 
-        // console.log({currentProjectList})
         richProjectArr.forEach(project => {
             ProjectList.addProject(project)
+
         })
         
-
-        console.log(ProjectList.getList().length)
         if(ProjectList.getList().length != 0) {
-            pubsub.publishSync('selectFirstOne')
-            currentProject = ProjectList.getList()[0]
-            loadProject(currentProject.getProjectInfo().id)
+            loadFirstProjectInView()
         }
+
+        
 
         newProjectID = lastProjectID + 1
         newTaskID = lastTaskID + 1
     }
     
-    // function getNewProjectID
-    
+    function loadFirstProjectInView() {
+        pubsub.publishSync('selectFirstOne')
+        currentProject = ProjectList.getList()[0]
+        loadProject(currentProject.getProjectInfo().id)
+    }
 
     pubsub.subscribe("newInfoSubmitted", (data, info) => {
         const newProject = Project(newProjectID++, data.name, data.description)
@@ -411,10 +417,9 @@ const Controller = (() => {
     }
 
     pubsub.subscribe('projectInfoSubmitted', ({title, description},info) => {
-        currentProject.name = title
-        currentProject.description = description
+        currentProject.setProjectInfo(title, description)
         pubsub.publish('infoChanged', {})
-        pubsub.publish('projectInfoChanged', currentProject)
+        
     })
     
 
@@ -430,8 +435,12 @@ const Controller = (() => {
 
     pubsub.subscribe('infoChanged', (data, topic) => {
         ls('projectList', ProjectList.getList())
-        
-        // console.log('stored', JSON.parse(localStorage.getItem('project')))
+    })
+
+    pubsub.subscribe('removeCurrentProject', () => {
+        const current = currentProject
+        pubsub.publishSync('removeProjectDOM', current)
+        loadFirstProjectInView()
     })
 
     function parseProjectList(projectArr) {
