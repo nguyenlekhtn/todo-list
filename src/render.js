@@ -21,14 +21,29 @@ const projectListView = (() => {
         newProjectDOM.classList.add("project", "project-link")
         newProjectDOM.setAttribute("data-projectID", project.getProjectInfo().id)
         newProjectDOM.textContent = project.getProjectInfo().name
+        newProjectDOM.tabIndex = 0
         newProjectDOM.addEventListener('click', e => {
-            if(!e.target.classList.contains('active'))
+            if(e.target.getAttribute('aria-current') != 'true')
             {
                 removeActiveDOM()
-                e.target.classList.add('active')
+                // e.target.classList.add('active')
+                newProjectDOM.setAttribute('aria-current', 'true')
                 pubsub.publish('projectSelected', e.target.dataset.projectid)
             }
             
+        })
+        newProjectDOM.addEventListener('keydown', function(e) {
+            const code = e.code
+
+            switch (code) {
+                case 'Enter':
+                case 'Backspace':
+                    e.preventDefault()
+                    e.target.click()
+
+                default:
+                    break;
+            }
         })
 
         return newProjectDOM
@@ -70,7 +85,7 @@ const projectListView = (() => {
     pubsub.subscribe('selectFirstOne', () => {
         const firstProjectDOM = projectContainerDOM.firstElementChild
         if(firstProjectDOM) {
-        firstProjectDOM.classList.add('active')
+        firstProjectDOM.setAttribute('aria-current', 'true')
         pubsub.publish('projectSelected', firstProjectDOM.dataset.projectid)
         }
     })
@@ -79,7 +94,7 @@ const projectListView = (() => {
 
     function removeActiveDOM() {
         [...projectContainerDOM.children].forEach(node => {
-            node.classList.remove('active')
+            node.removeAttribute('aria-current')
         })
     }
     
