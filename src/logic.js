@@ -3,22 +3,27 @@ const pubsub = new PubSub()
 const ls = require('local-storage');
 
 
-const Task = (id, name, dueDate) => {    
-    let isCompleted = false;
+const Task = (id, name, dueDate, isCompleted = 0) => {    
     
     const setTaskInfo = (newName, newDueDate) => {
         name = newName
         dueDate = newDueDate
-        pubsub.publish('taskInfoChange', {name, dueDate})
+        pubsub.publish('infoChanged')
+        // pubsub.publish('taskInfoChange', {name, dueDate})
     }
 
-    const getTaskInfo = () => ({id, name, dueDate})
+    const toggleCompleted = () => {
+        isCompleted = (isCompleted == 0) ? 1 : 0
+        pubsub.publishSync('infoChanged')
+    }
+
+    const getTaskInfo = () => ({id, name, dueDate, isCompleted})
 
     function toJSON() {
-        return {id, name, dueDate}
+        return {id, name, dueDate, isCompleted}
     }
     
-    return {setTaskInfo, getTaskInfo, toJSON}
+    return {setTaskInfo, getTaskInfo, toJSON, toggleCompleted}
 }
 
 const Project = (id, name, description="") => {
@@ -38,8 +43,9 @@ const Project = (id, name, description="") => {
     }   
 
     const removeTask = function(item) {
-        const pos = items.indexOf(items)
-        items.splice(pos, 1)
+        const pos = list.indexOf(item)
+        list.splice(pos, 1)
+        pubsub.publish('infoChanged')
     }
 
     const setProjectInfo = (newName, newDescription) => {
@@ -55,7 +61,7 @@ const Project = (id, name, description="") => {
         return {id, name, description, list}
     }
 
-    return {addTask, getProjectInfo, setProjectInfo, toJSON, setList} 
+    return {addTask, getProjectInfo, setProjectInfo, toJSON, setList, removeTask} 
 }
 
 const ProjectList = (() => {
@@ -85,7 +91,7 @@ const ProjectList = (() => {
     const findProject = (projectID) => { 
         const project =  list.filter(project => project.getProjectInfo().id == projectID)[0]
         if(!project) {
-            console.log({list: list.map(project => project.getProjectInfo().id), projectID})
+            
         }
 
         return project

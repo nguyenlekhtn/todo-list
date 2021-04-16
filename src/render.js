@@ -21,6 +21,24 @@ const projectListView = (() => {
         projectContainerDOM.appendChild(newProjectDOM)
     })
 
+    pubsub.subscribe('changeProjectInList', (project, info) => {
+        
+        const id = project.getProjectInfo().id
+        const projectDOM = getProjectDOMById(id)
+        projectDOM.setAttribute('aria-current', 'true')
+    })
+
+    function getProjectDOMById(id) {
+        return projectContainerDOM.querySelector(`div[data-projectid='${id}']`)
+    }
+
+    function selectProjectDOM(DOM) {
+        
+        removeActiveDOM()
+        DOM.setAttribute('aria-current', 'true')
+        pubsub.publish('projectSelected', DOM.dataset.projectid)
+    }
+
     const createProjectDOM = (project) => {
         const newProjectDOM = document.createElement('div')
         newProjectDOM.classList.add("project", "project-link")
@@ -30,10 +48,7 @@ const projectListView = (() => {
         newProjectDOM.addEventListener('click', e => {
             if(e.target.getAttribute('aria-current') != 'true')
             {
-                removeActiveDOM()
-                // e.target.classList.add('active')
-                newProjectDOM.setAttribute('aria-current', 'true')
-                pubsub.publish('projectSelected', e.target.dataset.projectid)
+                selectProjectDOM(newProjectDOM)
             }
         })
 
@@ -76,24 +91,24 @@ const projectListView = (() => {
     })
 
     document.forms['new-project-form'].addEventListener("submit", e => {
-        // e.preventDefault()
+        e.preventDefault()
         const name = document.forms['new-project-form'].elements['new-project-name'].value;
         const description = document.forms['new-project-form'].elements['new-project-description'].value
         pubsub.publish("newInfoSubmitted", {name, description})
-        // return false;
+        modal.close()
     })
 
 
     
     
 
-    pubsub.subscribe('selectFirstOne', () => {
-        const firstProjectDOM = projectContainerDOM.firstElementChild
-        if(firstProjectDOM) {
-        firstProjectDOM.setAttribute('aria-current', 'true')
-        pubsub.publish('projectSelected', firstProjectDOM.dataset.projectid)
-        }
-    })
+    // pubsub.subscribe('selectFirstOne', () => {
+    //     const firstProjectDOM = projectContainerDOM.firstElementChild
+    //     if(firstProjectDOM) {
+    //     firstProjectDOM.setAttribute('aria-current', 'true')
+    //     pubsub.publish('projectSelected', firstProjectDOM.dataset.projectid)
+    //     }
+    // })
 
 
 
@@ -170,6 +185,20 @@ const TaskDOM = (task) => {
     
     const check = document.createElement('div')
     check.classList.add('check', 'project-link')
+    if(task.getTaskInfo().isCompleted == 1) {
+        check.classList.add('checked')
+        taskDOM.style.opacity = 0.5
+    }
+    check.addEventListener('click', e => {
+        check.classList.toggle('checked')
+        if(window.getComputedStyle(taskDOM, null).opacity == 1) {
+            taskDOM.style.opacity = 0.5
+        }
+        else {
+            taskDOM.style.opacity = 1
+        }
+        pubsub.publish('taskCompletedChanged', task)
+    })
     
     const taskName = document.createElement('div')
     taskName.classList.add('task-name','project-link')
@@ -243,6 +272,8 @@ const TaskDOM = (task) => {
     binIcon.src = binSVG
     binIcon.classList.add('task-icon','bin-icon')
     binIcon.addEventListener('click', e => {
+        console.log({task})
+        pubsub.publishSync('taskDOMremoved', task)
         taskDOM.remove()
     })
 
@@ -367,11 +398,11 @@ const Controller = (() => {
     let newProjectID
     let newTaskID
 
-    if(!ls.get('projectList'))
+    if (!ls.get('projectList'))
     {
         populateStorage()
     }
-    else{
+    else {
         setItems()
     }
 
@@ -400,28 +431,30 @@ const Controller = (() => {
 
         richProjectArr.forEach(project => {
             ProjectList.addProject(project)
-
         })
         
-        if(ProjectList.getList().length != 0) {
-            loadFirstProjectInView()
-        }
-
-        
-
         newProjectID = lastProjectID + 1
         newTaskID = lastTaskID + 1
     }
+
+    if (ProjectList.getList().length != 0) {
+        loadFirstProjectInView()
+    }
     
     function loadFirstProjectInView() {
-        pubsub.publishSync('selectFirstOne')
         currentProject = ProjectList.getList()[0]
-        loadProject(currentProject.getProjectInfo().id)
+        console.log({currentProject})
+
+        if(currentProject) {
+            loadProject(currentProject.getProjectInfo().id)
+        }
     }
 
     pubsub.subscribe("newInfoSubmitted", (data, info) => {
+        
         const newProject = Project(newProjectID++, data.name, data.description)
         ProjectList.addProject(newProject)
+        loadProject(newProject.getProjectInfo().id)
     })
     
     pubsub.subscribe('projectSelected', (id, info) => {
@@ -429,30 +462,34 @@ const Controller = (() => {
     })
 
     function loadProject(id) {
+        
         const projectSelected = ProjectList.findProject(id)
-        currentProject = projectSelected
+        
         if(!projectSelected) {
-            console.log({projectSelected})
+            currentProject = projectSelected
         }
         pubsub.publish('changeProject', projectSelected)
+        pubsub.publish('changeProjectInList', projectSelected)
         pubsub.publish('loadTaskList', projectSelected.getProjectInfo().list)
     }
 
     pubsub.subscribe('projectInfoSubmitted', ({title, description},info) => {
         currentProject.setProjectInfo(title, description)
-        pubsub.publish('infoChanged', {})
         
     })
     
 
     pubsub.subscribe('taskInfoSubmitted', ({task, title, dueDate}, info) => {
         task.setTaskInfo(title, dueDate)
-        pubsub.publish('infoChanged', {})
     })
 
     pubsub.subscribe('newTaskSubmitted', ({title, dueDate}, topic) => {
         const newTask = Task(newTaskID++, title, dueDate)
         currentProject.addTask(newTask)
+    })
+
+    pubsub.subscribe('taskCompletedChanged', (task, topic) => {
+        task.toggleCompleted()
     })
 
     pubsub.subscribe('infoChanged', (data, topic) => {
@@ -465,6 +502,13 @@ const Controller = (() => {
         loadFirstProjectInView()
     })
 
+    pubsub.subscribe('taskDOMremoved', (task, info) => {
+        console.log({task})
+        console.log({currentProject})
+        currentProject.removeTask(task)
+
+    })
+
     function parseProjectList(projectArr) {
         for(let i = 0; i < projectArr.length; i++) {
             const plainProject = projectArr[i]
@@ -472,7 +516,7 @@ const Controller = (() => {
             const taskArr = plainProject.list
             for(let i = 0; i< taskArr.length; i++) {
                 const plainTask = taskArr[i]
-                const richTask = Task(plainTask.id, plainTask.name, plainTask.dueDate)
+                const richTask = Task(plainTask.id, plainTask.name, plainTask.dueDate, plainTask.isCompleted)
                 taskArr[i] = richTask
             }
             richProject.setList(taskArr)

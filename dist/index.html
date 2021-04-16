@@ -14,7 +14,9 @@
                 <div class="divider"></div>
                 <div class="project-container"></div>
                 <div class="add-project-container">
-                    <span role="button" class="plus-icon project-link" onclick='window.dialog.showModal()'>+</span>
+                    <div class='add-box'>
+                        <span role="button" class="plus-icon project-link" onclick='window.dialog.showModal()'>+</span>
+                    </div>
                 </div>
                 <dialog id="dialog">
                     <div class="popup-header">
@@ -25,7 +27,7 @@
                         <ul>
                             <li>
                                 <!-- <label for="new-project-name">Project name</label> -->
-                                <input name="new-project-name" id="new-project-name" type="text" placeholder="Project name" required autofocus>
+                                <input name="new-project-name" id="new-project-name" type="text" placeholder="Project name" required>
                             </li>
                             <li>
                                 <input name="new-project-description" id="new-project-description" type="text"  placeholder="Project description">
@@ -41,8 +43,8 @@
             <div class="main-panel">
                 <div class="project-info-container">
                     <div class="project-info">
-                        <div class="project-info-name">Le Project</div>
-                        <div class="project-info-description">My Project</div>
+                        <div class="project-info-name"></div>
+                        <div class="project-info-description"></div>
                     </div>
                     <div class="project-icon-container project-link">
                         <img role="button" src="../src/img/edit.svg" class="project-info-icon project-edit-icon">
@@ -51,7 +53,7 @@
                 </div>
                 <div class="edit-project-info-container">
                     <form id="edit-project-info-form">
-                        <input type="text" class="edit-input project-info-name" id="edit-input-name" autofocus>
+                        <input type="text" class="edit-input project-info-name" id="edit-input-name">
                         <input type="text" class="edit-input project-info-description" id="edit-input-description">
                         <div class="edit-project-button-container">
                             <input type="submit" value="Submit" class="edit-info-btn submit project-link" id="submit-project-info-btn">
@@ -64,7 +66,9 @@
                     
                 </div>
                 <div class="add-task-container" style="display: flex;">
-                    <span class="plus-icon project-link">+</span>
+                    <div class="add-box">
+                        <span class="plus-icon project-link">+</span>
+                    </div>
                 </div>
 
             </div>

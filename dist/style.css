@@ -65,7 +65,7 @@ img {
     font-weight: 700;
 }
 
-.project:hover, .project.active {
+.project:hover, .project[aria-current]{
     background-color: #444a4d;
 }
 
@@ -84,16 +84,24 @@ img {
     align-items: center;
 }
 
+.add-box {
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .plus-icon {
     font-size: 1.5em;
     font-weight: 700;
     color: #ff3f3f;
-    margin: 12px;
-    margin-right: 0;
+    /* margin: 12px; */
+    /* margin-right: 0; */
 }
 
 .plus-icon:hover {
-    box-shadow: 0 0 0 2px red;
+    font-size: 4em;
 }
 
 .add-project-container .add-project:hover {
@@ -253,6 +261,12 @@ img {
     background-size: 15px;
     background-repeat: no-repeat;
 }
+
+.checked + div {
+    text-decoration: line-through;
+}
+
+.task .task-content
 
 .task-name {
     margin-left: 12px;
