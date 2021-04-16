@@ -10,6 +10,11 @@ const defaultDate = formatISO(addDays(new Date(), 1), {representation: 'date'})
 
 const projectListView = (() => {
     const projectContainerDOM = document.querySelector('.project-container')
+    const modal = document.querySelector('dialog')
+
+    modal.addEventListener('transitionend', e => {
+        modal.querySelector('input').focus()
+    })
 
     pubsub.subscribe("projectAdded", (project, topic) => {
         const newProjectDOM = createProjectDOM(project)
@@ -30,8 +35,8 @@ const projectListView = (() => {
                 newProjectDOM.setAttribute('aria-current', 'true')
                 pubsub.publish('projectSelected', e.target.dataset.projectid)
             }
-            
         })
+
         newProjectDOM.addEventListener('keydown', function(e) {
             const code = e.code
 
@@ -70,10 +75,10 @@ const projectListView = (() => {
         changedProjectDOM.textContent = name
     })
 
-    document.querySelector('.popup-submit-btn').addEventListener("click", e => {
+    document.forms['new-project-form'].addEventListener("submit", e => {
         // e.preventDefault()
-        const name = document.querySelector('#new-project-name').value;
-        const description = document.querySelector('#new-project-description').value
+        const name = document.forms['new-project-form'].elements['new-project-name'].value;
+        const description = document.forms['new-project-form'].elements['new-project-description'].value
         pubsub.publish("newInfoSubmitted", {name, description})
         // return false;
     })
@@ -285,6 +290,7 @@ const TaskListView = (() => {
         editTaskName.type = 'text'
         editTaskName.value = defaultTaskName
         editTaskName.classList.add("edit-task-input")
+        editTaskDOM.setAttribute('autofocus', '')
         
         const editTaskDueDate = document.createElement('input')
         editTaskDueDate.id = 'edit-task-duedate'
@@ -347,6 +353,7 @@ const TaskListView = (() => {
         const newTaskForm = taskFormDOM()
         taskListDOM.appendChild(newTaskForm)
         addTaskContainerDOM.style.display = 'none'
+        newTaskForm.querySelector('#edit-task-name').focus()
     }
 
     

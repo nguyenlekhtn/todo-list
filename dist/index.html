@@ -14,39 +14,29 @@
                 <div class="divider"></div>
                 <div class="project-container"></div>
                 <div class="add-project-container">
-                    <div class="add-project">
-                        <div class="popup-container">
-                            <label role="button" class="plus-icon project-link" for="project-popup">+</label>
-                            <input type="checkbox" id="project-popup">
-                            <div class="popup">
-                                <label for="project-popup" class="transparent-label"></label>
-                                <div class="popup-inner">
-                                    <div class="popup-title">
-                                        <h6>New Project</h6>
-                                        <label for="project-popup" class="popup-close-btn" role="button">Close</label>
-                                    </div>
-                                    <div class="popup-content">
-                                        <form action="" id="new-project-form">
-                                            <ul>
-                                                <li>
-                                                    <input name="new-project-name" id="new-project-name" type="text" placeholder="Project name" required autofocus>
-                                                </li>
-                                                <li>
-                                                    <input name="new-project-description" id="new-project-description" type="text"  placeholder="Project description">
-                                                </li>
-                                                <li>
-                                                    <!-- <button type="submit">Submit</button> -->
-                                                    <label for="project-popup" class="popup-submit-btn" role="button">Add</label>
-                                                </li>
-                                            </ul>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <span role="button" class="plus-icon project-link" onclick='window.dialog.showModal()'>+</span>
+                </div>
+                <dialog id="dialog">
+                    <div class="popup-header">
+                        <h6 class="popup-title">New Project</h6>
+                        <input type="button" class="popup-close-btn" value="Close" onclick='window.dialog.close()'></input>
                     </div>
-                </div>  
-
+                    <form action="" id="new-project-form">
+                        <ul>
+                            <li>
+                                <!-- <label for="new-project-name">Project name</label> -->
+                                <input name="new-project-name" id="new-project-name" type="text" placeholder="Project name" required autofocus>
+                            </li>
+                            <li>
+                                <input name="new-project-description" id="new-project-description" type="text"  placeholder="Project description">
+                            </li>
+                            <li>
+                            
+                                <input type="submit" class="popup-submit-btn" value='Add' ></input>
+                            </li>
+                        </ul>
+                    </form>
+                </dialog>
             </div>
             <div class="main-panel">
                 <div class="project-info-container">

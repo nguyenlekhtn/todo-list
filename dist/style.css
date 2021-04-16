@@ -92,6 +92,10 @@ img {
     margin-right: 0;
 }
 
+.plus-icon:hover {
+    box-shadow: 0 0 0 2px red;
+}
+
 .add-project-container .add-project:hover {
     /* background-color: #444a4d; */
     font-size: 2em;
@@ -276,29 +280,13 @@ img {
     align-items: center;
 }
 
-.popup-container {
-    display: inline-block;
-}
 
-.popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 10;
-    display: none;
-    opacity: 0;
-    visibility: hidden;
-    transition: 250ms all;
-}
 
 .popup-inner {
     width: 400px;
     box-sizing: border-box;
     padding: 20px;
-    background: #2f3437;
+    background: rgb(47, 52, 55);
     position: absolute;
     top: 150%;
     left: 50%;
@@ -306,14 +294,42 @@ img {
     transition: 250ms all;
 }
 
-.popup-title {
+dialog {
+    width: 400px;
+    box-sizing: border-box;
+    padding: 20px;
+    background: #2f3437;
+    position: fixed;
+    top: 30%;
+    left: 30%;
+    color: inherit;
+    font-size: 1rem;
+    font-family: inherit;
+    border-radius: 0.6rem;
+    box-shadow: 0 0 1rem black;
+    background-color: rgb(47, 52, 55);
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+dialog[open]:not(:focus-within) {
+    background-color: rgb(47, 52, 56);
+    transition: background-color 0.01s;
+}
+
+
+
+
+.popup-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.popup-title h6 {
+.popup-title {
     font-size: 1.5em;
     font-weight: 700;
 }
@@ -326,30 +342,19 @@ img {
     padding: 0 15px;
     font-size: 16px;
     border-radius: 5px;
+    font-weight: 700;
 }
 
-.popup-container>input {
-    display: none;
-}
-.popup-container>input:checked+.popup {
-    display: flex;
-    opacity: 1;
-    visibility: visible;
-}
 
-.popup-container>input:checked+.popup .popup-inner {
-    top: 50%;
-}
-
-.popup-content ul li {
+form ul li {
     margin-bottom: 10px;
 }
 
-.popup-content ul li:last-child {
+form ul li:last-child {
     margin-bottom: 0;
 }
 
-.popup-content ul li input {
+form ul li input {
     /* display: inline-block; */
     color: inherit;
     width: 100%;
