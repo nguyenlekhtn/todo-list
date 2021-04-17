@@ -1,7 +1,6 @@
 import PubSub from 'PubSub';
-const pubsub = new PubSub()
 const ls = require('local-storage');
-
+const pubsub = new PubSub()
 
 const Task = (id, name, dueDate, isCompleted = 0) => {    
     
