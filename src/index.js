@@ -11,13 +11,11 @@ const Controller = (() => {
     let currentProject;
     let newProjectID
     let newTaskID
-    console.log(ls.get('projectList')   )
     if (!ls.get('projectList'))
     {
         populateStorage()
     }
     else {
-        console.log("parrot")
         setItems()
     }
 
@@ -40,7 +38,6 @@ const Controller = (() => {
     }
 
     function setItems() {
-        console.log("setitem")
         const plainProjectArr = ls('projectList')
         const richProjectArr = parseProjectList(plainProjectArr)
         
@@ -48,7 +45,6 @@ const Controller = (() => {
         const lastTaskID = ls('currentTaskID')
 
         richProjectArr.forEach(project => {
-            console.log({project})
             ProjectList.addProject(project)
         })
         
@@ -62,7 +58,6 @@ const Controller = (() => {
     
     function loadFirstProjectInView() {
         currentProject = ProjectList.getList()[0]
-        console.log({currentProject})
 
         if(currentProject) {
             loadProject(currentProject.getProjectInfo().id)
@@ -84,9 +79,9 @@ const Controller = (() => {
         
         const projectSelected = ProjectList.findProject(id)
         
-        if(!projectSelected) {
-            currentProject = projectSelected
-        }
+        
+        currentProject = projectSelected
+        
         pubsub.publish('changeProject', projectSelected)
         pubsub.publish('changeProjectInList', projectSelected)
         pubsub.publish('loadTaskList', projectSelected.getProjectInfo().list)
@@ -122,8 +117,6 @@ const Controller = (() => {
     })
 
     pubsub.subscribe('taskDOMremoved', (task, info) => {
-        console.log({task})
-        console.log({currentProject})
         currentProject.removeTask(task)
 
     })

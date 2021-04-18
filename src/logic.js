@@ -77,7 +77,6 @@ const ProjectList = (() => {
 
     const addProject = function(project) {
         list.push(project)
-        console.log('addProject')
         //announce to projectListView
         pubsub.publishSync('projectAdded', project)
         pubsub.publish('infoChanged')

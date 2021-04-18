@@ -10,8 +10,6 @@ import binSVG from './img/trash.svg'
 
 // document.getElementsByTagName('body')[0].appendChild(html)
 
-console.log(pubsub.subscribers())
-
 const defaultTaskName = "Default Task"
 const defaultDate = formatISO(addDays(new Date(), 1), {representation: 'date'})
 
@@ -24,7 +22,6 @@ const projectListView = (() => {
     })
 
     pubsub.subscribe("projectAdded", (project, topic) => {
-        console.log({topic})
         const newProjectDOM = createProjectDOM(project)
         projectContainerDOM.appendChild(newProjectDOM)
     })
@@ -281,7 +278,6 @@ const TaskDOM = (task) => {
     binIcon.src = binSVG
     binIcon.classList.add('task-icon','bin-icon')
     binIcon.addEventListener('click', e => {
-        console.log({task})
         pubsub.publishSync('taskDOMremoved', task)
         taskDOM.remove()
     })
