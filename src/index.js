@@ -1,17 +1,23 @@
 // import { IS_FINISHED } from './event-types.js'
-import {projectListView, TaskListView} from './render'
-import {Task, Project, ProjectList, pubsub, ls} from './logic'
+import {projectListView, projectView, TaskListView, TaskDOM} from './render'
+import {Task, Project, ProjectList, pubsub} from './logic'
+import {addDays, formatISO} from 'date-fns'
+
+import './style.css'
+
 
 const Controller = (() => {
+    const ls = require('local-storage');
     let currentProject;
     let newProjectID
     let newTaskID
-
+    console.log(ls.get('projectList')   )
     if (!ls.get('projectList'))
     {
         populateStorage()
     }
     else {
+        console.log("parrot")
         setItems()
     }
 
@@ -22,6 +28,8 @@ const Controller = (() => {
         ProjectList.addProject(defaultProject)
         currentProject = defaultProject
         const defaultTaskID = 0
+        const defaultTaskName = "Default Task"
+        const defaultDate = formatISO(addDays(new Date(), 1), {representation: 'date'}) 
         const defaultTask = Task(0, defaultTaskName, defaultDate)
 
         defaultProject.addTask(defaultTask)
@@ -32,6 +40,7 @@ const Controller = (() => {
     }
 
     function setItems() {
+        console.log("setitem")
         const plainProjectArr = ls('projectList')
         const richProjectArr = parseProjectList(plainProjectArr)
         
@@ -39,6 +48,7 @@ const Controller = (() => {
         const lastTaskID = ls('currentTaskID')
 
         richProjectArr.forEach(project => {
+            console.log({project})
             ProjectList.addProject(project)
         })
         

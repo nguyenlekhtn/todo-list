@@ -1,5 +1,5 @@
 import PubSub from 'PubSub';
-const ls = require('local-storage');
+// const ls = require('local-storage');
 const pubsub = new PubSub()
 
 const Task = (id, name, dueDate, isCompleted = 0) => {    
@@ -26,6 +26,7 @@ const Task = (id, name, dueDate, isCompleted = 0) => {
 }
 
 const Project = (id, name, description="") => {
+    const ls = require('local-storage');
     let list = []
 
     const setList = (taskArr) => {
@@ -64,6 +65,7 @@ const Project = (id, name, description="") => {
 }
 
 const ProjectList = (() => {
+    const ls = require('local-storage');
     let list = []
 
     const setList = (projectArr) => {
@@ -75,6 +77,8 @@ const ProjectList = (() => {
 
     const addProject = function(project) {
         list.push(project)
+        console.log('addProject')
+        //announce to projectListView
         pubsub.publishSync('projectAdded', project)
         pubsub.publish('infoChanged')
         ls('currentProjectID', project.getProjectInfo().id)
@@ -103,4 +107,4 @@ const ProjectList = (() => {
     return {addProject, removeProject, findProject, getList, setList}
 })()
 
-export {Task, Project, ProjectList, pubsub, ls}
+export {Task, Project, ProjectList, pubsub}

@@ -2,9 +2,15 @@ import {ProjectList, pubsub} from './logic'
 import {addDays, formatISO, parseISO, formatDistanceStrict} from 'date-fns'
 
 
+
 import editSVG from './img/edit.svg'
 import binSVG from './img/trash.svg'
 
+// import html from './UI.html'
+
+// document.getElementsByTagName('body')[0].appendChild(html)
+
+console.log(pubsub.subscribers())
 
 const defaultTaskName = "Default Task"
 const defaultDate = formatISO(addDays(new Date(), 1), {representation: 'date'})
@@ -18,6 +24,7 @@ const projectListView = (() => {
     })
 
     pubsub.subscribe("projectAdded", (project, topic) => {
+        console.log({topic})
         const newProjectDOM = createProjectDOM(project)
         projectContainerDOM.appendChild(newProjectDOM)
     })
@@ -26,6 +33,7 @@ const projectListView = (() => {
         
         const id = project.getProjectInfo().id
         const projectDOM = getProjectDOMById(id)
+        removeActiveDOM()
         projectDOM.setAttribute('aria-current', 'true')
     })
 
@@ -320,7 +328,7 @@ const TaskListView = (() => {
         const editTaskName = document.createElement('input')
         editTaskName.id = 'edit-task-name'
         editTaskName.type = 'text'
-        editTaskName.value = defaultTaskName
+        editTaskName.value = ""
         editTaskName.classList.add("edit-task-input")
         
         const editTaskDueDate = document.createElement('input')
