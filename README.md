@@ -13,5 +13,6 @@ what I practiced in this project:
 - Using [aria-current] attribute to set the active state of an element
 - Using dialog to show a popup in page
 - Change display attribute to show/hide element
+- Use babel-loader to make my project backward compatible
 
 Live demo: https://nguyenlekhtn.github.io/todo-list/
